@@ -225,22 +225,6 @@ export default function App() {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Banner */}
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-600/10 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-xs font-semibold mb-3">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
-              <span>접속 사용자: {currentUser.email} (Supabase 인증됨)</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">
-              LX MMA 2026년 월별 세무 신고·납부 캘린더
-            </h2>
-            <p className="text-sm text-emerald-100 max-w-2xl leading-relaxed">
-              법인세, 월별 부가가치세(매월 25일), 원천세 및 지방세(특별징수) 일정을 정확하고 체계적으로 관리하세요.
-            </p>
-          </div>
-        </div>
-
         <StatsOverview schedules={schedules} />
 
         <ScheduleFilters

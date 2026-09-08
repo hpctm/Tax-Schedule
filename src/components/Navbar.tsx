@@ -59,7 +59,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User profile / Logout */}
           {currentUser && (
-            <div className="flex items-center space-x-2 pl-2 border-l border-slate-200">
+            <div className="flex items-center space-x-3 pl-3 border-l border-slate-200">
+              <div className="hidden sm:flex flex-col text-right">
+                <span className="text-xs font-bold text-slate-800">{currentUser.email}</span>
+                <span className="text-[10px] text-emerald-600 font-semibold flex items-center justify-end">
+                  <ShieldCheck className="w-3 h-3 mr-0.5 inline" /> Supabase 인증됨
+                </span>
+              </div>
               <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold" title={currentUser.email}>
                 {currentUser.email?.[0]?.toUpperCase() || 'U'}
               </div>

@@ -520,7 +520,10 @@ function getStoredSchedules() {
   try {
     if (fs.existsSync(dataFilePath)) {
       const fileContent = fs.readFileSync(dataFilePath, "utf-8");
-      return JSON.parse(fileContent);
+      const parsed = JSON.parse(fileContent);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
     }
   } catch (e) {
     console.error("Error reading storage:", e);
