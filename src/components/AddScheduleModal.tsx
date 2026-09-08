@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TaxSchedule, TaxCategory } from '../types';
+import { getNextBusinessDay } from '../utils/taxUtils';
 import { X, Calendar, Star, Bell, ShieldCheck } from 'lucide-react';
 
 interface AddScheduleModalProps {
@@ -57,12 +58,18 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
       return;
     }
 
+    const { adjustedDate, wasShifted, originalDate } = getNextBusinessDay(dueDate);
+    let finalDesc = description;
+    if (wasShifted) {
+      finalDesc += ` (원래 마감일인 ${originalDate}이 주말/공휴일이므로 익영업일인 ${adjustedDate}로 자동 이월됨)`;
+    }
+
     onSave({
       id: editingSchedule ? editingSchedule.id : `sched-custom-${Date.now()}`,
       title,
       category,
-      dueDate,
-      description,
+      dueDate: adjustedDate,
+      description: finalDesc,
       isOfficial,
       isImportant,
       reminderDays: Number(reminderDays),

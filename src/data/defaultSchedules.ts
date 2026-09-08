@@ -1,6 +1,7 @@
 import { TaxSchedule } from '../types';
+import { getNextBusinessDay } from '../utils/taxUtils';
 
-export const defaultSchedules: TaxSchedule[] = [
+const schedulesData: TaxSchedule[] = [
   // --- 법인세 ---
   {
     id: "sched-corp-1",
@@ -78,8 +79,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-wh-4",
     title: "4월분 원천세 신고 및 납부",
     category: "원천세",
-    dueDate: "2026-05-11",
-    description: "4월 지급 소득에 대한 원천징수세액 신고 및 납부 (5월 10일 일요일 -> 익영업일)",
+    dueDate: "2026-05-10",
+    description: "4월 지급 소득에 대한 원천징수세액 신고 및 납부",
     isOfficial: true,
     isImportant: false,
     reminderDays: 3,
@@ -148,8 +149,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-wh-9",
     title: "9월분 원천세 신고 및 납부",
     category: "원천세",
-    dueDate: "2026-10-12",
-    description: "9월 지급 소득에 대한 원천징수세액 신고 및 납부 (10월 10일 토요일 -> 익영업일)",
+    dueDate: "2026-10-10",
+    description: "9월 지급 소득에 대한 원천징수세액 신고 및 납부",
     isOfficial: true,
     isImportant: false,
     reminderDays: 3,
@@ -190,8 +191,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-wh-12",
     title: "12월분 원천세 신고 및 납부",
     category: "원천세",
-    dueDate: "2027-01-11",
-    description: "12월 지급 소득에 대한 원천징수세액 신고 및 납부 (1월 10일 일요일 -> 익영업일)",
+    dueDate: "2027-01-10",
+    description: "12월 지급 소득에 대한 원천징수세액 신고 및 납부",
     isOfficial: true,
     isImportant: false,
     reminderDays: 3,
@@ -248,7 +249,7 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-loc-4",
     title: "4월분 지방소득세(특별징수) 납부",
     category: "지방세",
-    dueDate: "2026-05-11",
+    dueDate: "2026-05-10",
     description: "원천징수 소득세의 지방소득세 특별징수분 납부",
     isOfficial: true,
     isImportant: false,
@@ -318,7 +319,7 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-loc-9",
     title: "9월분 지방소득세(특별징수) 납부",
     category: "지방세",
-    dueDate: "2026-10-12",
+    dueDate: "2026-10-10",
     description: "원천징수 소득세의 지방소득세 특별징수분 납부",
     isOfficial: true,
     isImportant: false,
@@ -360,7 +361,7 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-loc-12",
     title: "12월분 지방소득세(특별징수) 납부",
     category: "지방세",
-    dueDate: "2027-01-11",
+    dueDate: "2027-01-10",
     description: "원천징수 소득세의 지방소득세 특별징수분 납부",
     isOfficial: true,
     isImportant: false,
@@ -371,7 +372,7 @@ export const defaultSchedules: TaxSchedule[] = [
     source: "위택스(Wetax) 지방소득세 특별징수 납부안내"
   },
 
-  // --- 부가가치세 (LX MMA 월별 신고제: 매월 25일, 주말/휴일 익영업일 반영) ---
+  // --- 부가가치세 (LX MMA 월별 신고제: 매월 25일) ---
   {
     id: "sched-vat-1",
     title: "1월 부가가치세 월별 신고 및 납부",
@@ -404,8 +405,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-vat-3",
     title: "3월 부가가치세 월별 신고 및 납부",
     category: "부가가치세",
-    dueDate: "2026-04-27",
-    description: "3월분 부가가치세 신고 및 납부 (4월 25일 토요일 -> 익영업일)",
+    dueDate: "2026-04-25",
+    description: "3월분 부가가치세 신고 및 납부",
     isOfficial: true,
     isImportant: true,
     reminderDays: 3,
@@ -446,8 +447,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-vat-6",
     title: "6월 부가가치세 월별 신고 및 납부",
     category: "부가가치세",
-    dueDate: "2026-07-27",
-    description: "6월분 부가가치세 신고 및 납부 (7월 25일 토요일 -> 익영업일)",
+    dueDate: "2026-07-25",
+    description: "6월분 부가가치세 신고 및 납부",
     isOfficial: true,
     isImportant: true,
     reminderDays: 3,
@@ -488,8 +489,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-vat-9",
     title: "9월 부가가치세 월별 신고 및 납부",
     category: "부가가치세",
-    dueDate: "2026-10-26",
-    description: "9월분 부가가치세 신고 및 납부 (10월 25일 일요일 -> 익영업일)",
+    dueDate: "2026-10-25",
+    description: "9월분 부가가치세 신고 및 납부",
     isOfficial: true,
     isImportant: true,
     reminderDays: 3,
@@ -516,8 +517,8 @@ export const defaultSchedules: TaxSchedule[] = [
     id: "sched-vat-11",
     title: "11월 부가가치세 월별 신고 및 납부",
     category: "부가가치세",
-    dueDate: "2026-12-28",
-    description: "11월분 부가가치세 신고 및 납부 (12월 25일 크리스마스 공휴일 -> 익영업일)",
+    dueDate: "2026-12-25",
+    description: "11월분 부가가치세 신고 및 납부",
     isOfficial: true,
     isImportant: true,
     reminderDays: 3,
@@ -541,3 +542,17 @@ export const defaultSchedules: TaxSchedule[] = [
     source: "국세청 홈택스 및 LX MMA 월별 부가가치세 신고 지침"
   }
 ];
+
+// Automatically apply getNextBusinessDay to all default schedules so that if due date falls on weekend/holiday, it shifts to next business day
+export const defaultSchedules: TaxSchedule[] = schedulesData.map(sched => {
+  const { adjustedDate, wasShifted, originalDate } = getNextBusinessDay(sched.dueDate);
+  let desc = sched.description;
+  if (wasShifted) {
+    desc += ` (원래 마감일인 ${originalDate}이 주말/공휴일이므로 익영업일인 ${adjustedDate}로 이월)`;
+  }
+  return {
+    ...sched,
+    dueDate: adjustedDate,
+    description: desc
+  };
+});
