@@ -2,22 +2,11 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import fs from "fs";
-import { GoogleGenAI } from "@google/genai";
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-
-// Initialize Gemini client if API key exists
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || "",
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
-});
 
 // Default official tax schedules for Korean corporations / businesses (2026)
 const defaultSchedules = [
@@ -180,39 +169,6 @@ app.post("/api/tax-schedules", (req, res) => {
     }
   } catch (e: any) {
     res.status(500).json({ success: false, error: e.message });
-  }
-});
-
-// AI Tax Assistant endpoint using Gemini
-app.post("/api/ai-tax-assistant", async (req, res) => {
-  try {
-    const { prompt, schedulesContext } = req.body;
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "GEMINI_API_KEY가 설정되지 않았습니다. Settings > Secrets에서 API Key를 설정해주세요." 
-      });
-    }
-
-    const systemInstruction = `당신은 대한민국 기업 세무 및 회계 전문가이자 사내 세무일정 관리 어시스턴트입니다. 
-국세청 홈택스 기준 법인세, 부가가치세, 원천세, 종합소득세 및 4대보험 신고/납부 일정에 대해 정확하고 친절하게 답변해주세요.
-사용자의 질문과 현재 등록된 세무 일정 데이터를 참고하여 유용한 세무 조언, 준비 서류, 주의사항을 안내해주세요.
-답변은 명확하고 간결한 한국어로 작성하세요.`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: `사용자 질문: ${prompt}\n\n참고 세무 일정 목록: ${JSON.stringify(schedulesContext || [])}`,
-      config: {
-        systemInstruction,
-        temperature: 0.3,
-        tools: [{ googleSearch: {} }],
-      }
-    });
-
-    res.json({ success: true, answer: response.text });
-  } catch (e: any) {
-    console.error("Gemini AI Error:", e);
-    res.status(500).json({ success: false, error: e.message || "AI 응답 생성 중 오류가 발생했습니다." });
   }
 });
 

@@ -82,7 +82,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLoginSuccess }) => {
           <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-600/30">
             <ShieldCheck className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">사내 세무 일정 관리</h2>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">LX MMA 세무일정 관리</h2>
           <p className="text-sm text-slate-500 mt-1">Supabase 인가 사용자 로그인</p>
         </div>
 

@@ -1,9 +1,8 @@
 import React from 'react';
-import { Calendar, Bell, Bot, Plus, ShieldCheck, Upload, LogOut, User } from 'lucide-react';
+import { Calendar, Bell, Plus, ShieldCheck, Upload, LogOut } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddModal: () => void;
-  onOpenAIModal: () => void;
   onOpenNotifications: () => void;
   onOpenCsvModal: () => void;
   unreadCount: number;
@@ -13,7 +12,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenAddModal,
-  onOpenAIModal,
   onOpenNotifications,
   onOpenCsvModal,
   unreadCount,
@@ -29,12 +27,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-bold text-slate-800 tracking-tight">사내 세무 일정 관리</h1>
+              <h1 className="text-xl font-bold text-slate-800 tracking-tight">LX MMA 세무일정 관리</h1>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                 <ShieldCheck className="w-3 h-3 mr-1" /> Supabase 인증 연동
               </span>
             </div>
-            <p className="text-xs text-slate-500">Corporate Tax Filing & Payment Schedule Hub</p>
           </div>
         </div>
 
@@ -47,16 +44,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Upload className="w-4 h-4 mr-1.5 text-emerald-600" />
             <span>CSV 누적 저장</span>
-          </button>
-
-          {/* AI Assistant Button */}
-          <button
-            onClick={onOpenAIModal}
-            className="inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors border border-emerald-200/60"
-            title="세무 AI 어시스턴트"
-          >
-            <Bot className="w-4 h-4 mr-1.5 text-emerald-600" />
-            <span className="hidden sm:inline">세무 AI 상담</span>
           </button>
 
           {/* Notifications Bell */}

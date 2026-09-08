@@ -1,6 +1,6 @@
 {
-  "name": "사내 세무 일정 관리",
-  "description": "국세청 공인 연간 세무신고 및 납부 일정 관리, 사내 고유 일정 추가/삭제, 기한 전후 알림 및 중요 일정 강조 프로그램",
+  "name": "LX MMA 세무일정 관리",
+  "description": "LX MMA 사내 연간 세무신고 및 납부 일정 관리, Supabase 연동 및 CSV 누적 저장",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

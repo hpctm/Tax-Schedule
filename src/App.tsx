@@ -7,11 +7,10 @@ import { ScheduleFilters } from './components/ScheduleFilters';
 import { ScheduleCard } from './components/ScheduleCard';
 import { CalendarView } from './components/CalendarView';
 import { AddScheduleModal } from './components/AddScheduleModal';
-import { AIAssistantModal } from './components/AIAssistantModal';
 import { NotificationModal } from './components/NotificationModal';
 import { CsvUploadModal } from './components/CsvUploadModal';
 import { LoginModal } from './components/LoginModal';
-import { ShieldCheck, Sparkles, AlertCircle, Plus, Upload } from 'lucide-react';
+import { ShieldCheck, AlertCircle, Plus, Upload } from 'lucide-react';
 
 const defaultSchedules: TaxSchedule[] = [
   {
@@ -148,7 +147,6 @@ export default function App() {
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [isNotifModalOpen, setIsNotifModalOpen] = useState(false);
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TaxSchedule | null>(null);
@@ -192,7 +190,7 @@ export default function App() {
         }
       } else {
         // If not configured, allow demo user bypass
-        setCurrentUser({ email: 'demo.admin@company.com', id: 'demo-user' });
+        setCurrentUser({ email: 'lxmma.admin@lx.com', id: 'demo-user' });
         generateNotifications(defaultSchedules);
       }
       setIsLoading(false);
@@ -207,7 +205,6 @@ export default function App() {
 
     if (isSupabaseConfigured && supabase && currentUser) {
       try {
-        // Upsert or sync to Supabase tax_schedules table
         for (const s of updatedSchedules) {
           await supabase.from('tax_schedules').upsert({
             id: s.id,
@@ -377,7 +374,6 @@ export default function App() {
           setEditingSchedule(null);
           setIsAddModalOpen(true);
         }}
-        onOpenAIModal={() => setIsAIModalOpen(true)}
         onOpenNotifications={() => setIsNotifModalOpen(true)}
         onOpenCsvModal={() => setIsCsvModalOpen(true)}
         unreadCount={unreadCount}
@@ -394,7 +390,7 @@ export default function App() {
               <span>접속 사용자: {currentUser.email} (Supabase 인증됨)</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">
-              정확하고 체계적인 사내 세무 캘린더
+              LX MMA 정확하고 체계적인 세무 캘린더
             </h2>
             <p className="text-sm text-emerald-100 max-w-2xl leading-relaxed">
               법인세, 부가가치세, 원천세 및 CSV 데이터 누적 저장을 Supabase와 연동하여 안전하게 관리하세요.
@@ -407,13 +403,6 @@ export default function App() {
             >
               <Upload className="w-4 h-4 mr-2 text-emerald-600" />
               CSV 데이터 누적 업로드
-            </button>
-            <button
-              onClick={() => setIsAIModalOpen(true)}
-              className="inline-flex items-center justify-center px-4 py-3 rounded-2xl text-sm font-semibold text-white bg-emerald-700 hover:bg-emerald-800 shadow-md transition-all active:scale-95 border border-emerald-500/40"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              세무 AI 상담
             </button>
           </div>
         </div>
@@ -486,7 +475,7 @@ export default function App() {
       </main>
 
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-12 border-t border-emerald-100 text-center text-xs text-slate-500">
-        <p>© 2026 사내 세무 일정 관리 프로그램 (Supabase Auth & Database Integrated). All rights reserved.</p>
+        <p>© 2026 LX MMA 세무일정 관리 프로그램 (Supabase Auth & Database Integrated). All rights reserved.</p>
       </footer>
 
       <AddScheduleModal
@@ -497,12 +486,6 @@ export default function App() {
         }}
         onSave={handleSaveSchedule}
         editingSchedule={editingSchedule}
-      />
-
-      <AIAssistantModal
-        isOpen={isAIModalOpen}
-        onClose={() => setIsAIModalOpen(false)}
-        schedules={schedules}
       />
 
       <NotificationModal
