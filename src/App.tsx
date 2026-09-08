@@ -10,6 +10,7 @@ import { CalendarView } from './components/CalendarView';
 import { AddScheduleModal } from './components/AddScheduleModal';
 import { NotificationModal } from './components/NotificationModal';
 import { LoginModal } from './components/LoginModal';
+import { HolidayManagerModal } from './components/HolidayManagerModal';
 import { ShieldCheck, AlertCircle, Plus } from 'lucide-react';
 
 export default function App() {
@@ -39,6 +40,7 @@ export default function App() {
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isNotifModalOpen, setIsNotifModalOpen] = useState(false);
+  const [isHolidayModalOpen, setIsHolidayModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TaxSchedule | null>(null);
 
   // Fetch initial schedules from server backend (/api/tax-schedules) and auth
@@ -249,6 +251,7 @@ export default function App() {
           setIsAddModalOpen(true);
         }}
         onOpenNotifications={() => setIsNotifModalOpen(true)}
+        onOpenHolidayManager={() => setIsHolidayModalOpen(true)}
         unreadCount={unreadCount}
         currentUser={currentUser}
         onLogout={handleLogout}
@@ -351,6 +354,15 @@ export default function App() {
         }}
         onClearAll={() => {
           setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        }}
+      />
+
+      <HolidayManagerModal
+        isOpen={isHolidayModalOpen}
+        onClose={() => setIsHolidayModalOpen(false)}
+        onHolidaysChanged={() => {
+          // Re-trigger notification generation or refresh
+          generateNotifications(schedules);
         }}
       />
     </div>

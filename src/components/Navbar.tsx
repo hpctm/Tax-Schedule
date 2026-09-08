@@ -1,9 +1,10 @@
 import React from 'react';
-import { Calendar, Bell, Plus, ShieldCheck, LogOut } from 'lucide-react';
+import { Calendar, Bell, Plus, ShieldCheck, LogOut, Settings } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddModal: () => void;
   onOpenNotifications: () => void;
+  onOpenHolidayManager: () => void;
   unreadCount: number;
   currentUser: any;
   onLogout: () => void;
@@ -12,6 +13,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenAddModal,
   onOpenNotifications,
+  onOpenHolidayManager,
   unreadCount,
   currentUser,
   onLogout,
@@ -34,6 +36,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Holiday Manager Button */}
+          <button
+            onClick={onOpenHolidayManager}
+            className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 transition-all border border-slate-200"
+            title="법정 공휴일 관리"
+          >
+            <Settings className="w-4 h-4 mr-1.5 text-slate-500" />
+            공휴일 관리
+          </button>
+
           {/* Notifications Bell */}
           <button
             onClick={onOpenNotifications}
