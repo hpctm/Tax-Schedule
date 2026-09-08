@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TaxSchedule, NotificationItem, TaxCategory } from './types';
+import { defaultSchedules } from './data/defaultSchedules';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { Navbar } from './components/Navbar';
 import { StatsOverview } from './components/StatsOverview';
@@ -14,7 +15,18 @@ import { ShieldCheck, AlertCircle, Plus } from 'lucide-react';
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [schedules, setSchedules] = useState<TaxSchedule[]>([]);
+  const [schedules, setSchedules] = useState<TaxSchedule[]>(() => {
+    try {
+      const saved = localStorage.getItem('lx_mma_schedules');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      // ignore
+    }
+    return defaultSchedules;
+  });
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -47,16 +59,20 @@ export default function App() {
         setCurrentUser({ email: 'lxmma.admin@lx.com', id: 'demo-user' });
       }
 
+      // Generate notifications for initial schedules immediately
+      generateNotifications(schedules);
+
       // Fetch from backend API
       try {
         const res = await fetch('/api/tax-schedules');
         const data = await res.json();
-        if (data.success && data.schedules) {
+        if (data.success && data.schedules && data.schedules.length > 0) {
           setSchedules(data.schedules);
           generateNotifications(data.schedules);
+          localStorage.setItem('lx_mma_schedules', JSON.stringify(data.schedules));
         }
       } catch (e) {
-        console.error('Failed to fetch schedules:', e);
+        console.error('Failed to fetch schedules from API (using local/default cache):', e);
       } finally {
         setIsLoading(false);
       }
@@ -68,6 +84,11 @@ export default function App() {
   const saveSchedulesToServer = async (updatedSchedules: TaxSchedule[]) => {
     setSchedules(updatedSchedules);
     generateNotifications(updatedSchedules);
+    try {
+      localStorage.setItem('lx_mma_schedules', JSON.stringify(updatedSchedules));
+    } catch (e) {
+      // ignore
+    }
 
     try {
       await fetch('/api/tax-schedules', {
@@ -76,7 +97,7 @@ export default function App() {
         body: JSON.stringify({ schedules: updatedSchedules }),
       });
     } catch (err) {
-      console.error('Failed to save schedules to server:', err);
+      console.error('Failed to save schedules to server (static hosting mode):', err);
     }
   };
 
