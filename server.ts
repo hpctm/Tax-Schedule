@@ -205,6 +205,7 @@ app.post("/api/ai-tax-assistant", async (req, res) => {
       config: {
         systemInstruction,
         temperature: 0.3,
+        tools: [{ googleSearch: {} }],
       }
     });
 
