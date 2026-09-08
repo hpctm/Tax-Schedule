@@ -1,18 +1,24 @@
 import React from 'react';
-import { Calendar, Bell, Bot, Plus, ShieldCheck, Sparkles } from 'lucide-react';
+import { Calendar, Bell, Bot, Plus, ShieldCheck, Upload, LogOut, User } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddModal: () => void;
   onOpenAIModal: () => void;
   onOpenNotifications: () => void;
+  onOpenCsvModal: () => void;
   unreadCount: number;
+  currentUser: any;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenAddModal,
   onOpenAIModal,
   onOpenNotifications,
+  onOpenCsvModal,
   unreadCount,
+  currentUser,
+  onLogout,
 }) => {
   return (
     <header className="bg-white border-b border-emerald-100 sticky top-0 z-30 shadow-xs">
@@ -25,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center space-x-2">
               <h1 className="text-xl font-bold text-slate-800 tracking-tight">사내 세무 일정 관리</h1>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                <ShieldCheck className="w-3 h-3 mr-1" /> 국세청 공인
+                <ShieldCheck className="w-3 h-3 mr-1" /> Supabase 인증 연동
               </span>
             </div>
             <p className="text-xs text-slate-500">Corporate Tax Filing & Payment Schedule Hub</p>
@@ -33,6 +39,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* CSV Upload Button */}
+          <button
+            onClick={onOpenCsvModal}
+            className="hidden sm:inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border border-slate-200"
+            title="CSV 누적 업로드"
+          >
+            <Upload className="w-4 h-4 mr-1.5 text-emerald-600" />
+            <span>CSV 누적 저장</span>
+          </button>
+
           {/* AI Assistant Button */}
           <button
             onClick={onOpenAIModal}
@@ -65,6 +81,22 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Plus className="w-4 h-4 mr-1.5" />
             일정 추가
           </button>
+
+          {/* User profile / Logout */}
+          {currentUser && (
+            <div className="flex items-center space-x-2 pl-2 border-l border-slate-200">
+              <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold" title={currentUser.email}>
+                {currentUser.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <button
+                onClick={onLogout}
+                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                title="로그아웃"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
