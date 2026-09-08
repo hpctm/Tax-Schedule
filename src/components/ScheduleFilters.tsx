@@ -1,14 +1,14 @@
 import React from 'react';
 import { TaxCategory } from '../types';
-import { Search, ListFilter, LayoutGrid, List } from 'lucide-react';
+import { Search, ListFilter, LayoutGrid, List, X } from 'lucide-react';
 
 interface ScheduleFiltersProps {
   selectedCategory: string;
   onSelectCategory: (cat: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  statusFilter: 'all' | 'pending' | 'completed' | 'important';
-  onStatusFilterChange: (status: 'all' | 'pending' | 'completed' | 'important') => void;
+  statusFilter: 'all' | 'pending' | 'completed' | 'important' | 'upcoming30';
+  onStatusFilterChange: (status: 'all' | 'pending' | 'completed' | 'important' | 'upcoming30') => void;
   viewMode: 'list' | 'calendar';
   onViewModeChange: (mode: 'list' | 'calendar') => void;
 }
@@ -59,6 +59,16 @@ export const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({
               }`}
             >
               전체
+            </button>
+            <button
+              onClick={() => onStatusFilterChange('upcoming30')}
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                statusFilter === 'upcoming30'
+                  ? 'bg-white text-amber-700 shadow-xs font-semibold ring-1 ring-amber-400'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              ⏳ 30일내임박
             </button>
             <button
               onClick={() => onStatusFilterChange('pending')}
@@ -114,6 +124,19 @@ export const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Active Filter Banner if upcoming30 or specific filters */}
+      {statusFilter === 'upcoming30' && (
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 px-4 py-2.5 rounded-xl text-xs text-amber-800">
+          <span className="font-medium">⚡ 현재 '30일 내 임박 일정' 카드 필터가 적용되어 있습니다.</span>
+          <button
+            onClick={() => onStatusFilterChange('all')}
+            className="inline-flex items-center text-amber-900 hover:text-amber-950 font-semibold bg-amber-100/80 px-2.5 py-1 rounded-lg transition-all"
+          >
+            <X className="w-3.5 h-3.5 mr-1" /> 필터 해제
+          </button>
+        </div>
+      )}
 
       {/* Category Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">

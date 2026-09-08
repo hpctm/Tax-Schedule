@@ -33,7 +33,7 @@ export default function App() {
   // Filters & View State
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'important'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'important' | 'upcoming30'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
   // Modals state
@@ -221,6 +221,15 @@ export default function App() {
     if (statusFilter === 'pending' && s.completed) return false;
     if (statusFilter === 'completed' && !s.completed) return false;
     if (statusFilter === 'important' && !s.isImportant) return false;
+    if (statusFilter === 'upcoming30') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(s.dueDate);
+      due.setHours(0, 0, 0, 0);
+      const diffTime = due.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (s.completed || diffDays < 0 || diffDays > 30) return false;
+    }
 
     return true;
   });
@@ -246,7 +255,7 @@ export default function App() {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <StatsOverview schedules={schedules} />
+        <StatsOverview schedules={schedules} activeFilter={statusFilter} onSelectFilter={setStatusFilter} />
 
         <ScheduleFilters
           selectedCategory={selectedCategory}
