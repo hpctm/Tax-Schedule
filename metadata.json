@@ -1,0 +1,6 @@
+{
+  "name": "사내 세무 일정 관리",
+  "description": "국세청 공인 연간 세무신고 및 납부 일정 관리, 사내 고유 일정 추가/삭제, 기한 전후 알림 및 중요 일정 강조 프로그램",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
