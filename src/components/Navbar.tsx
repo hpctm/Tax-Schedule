@@ -40,10 +40,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onOpenHolidayManager}
             className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 transition-all border border-slate-200"
-            title="법정 공휴일 관리"
+            title="휴일 관리"
           >
             <Settings className="w-4 h-4 mr-1.5 text-slate-500" />
-            공휴일 관리
+            휴일 관리
           </button>
 
           {/* Notifications Bell */}
