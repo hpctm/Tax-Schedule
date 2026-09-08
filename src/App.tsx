@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TaxSchedule, NotificationItem, TaxCategory } from './types';
 import { defaultSchedules } from './data/defaultSchedules';
+import { HolidayRecord, getCustomHolidays, saveCustomHolidays, recalculateScheduleDueDate } from './utils/taxUtils';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { Navbar } from './components/Navbar';
 import { StatsOverview } from './components/StatsOverview';
@@ -16,17 +17,21 @@ import { ShieldCheck, AlertCircle, Plus } from 'lucide-react';
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [holidays, setHolidays] = useState<HolidayRecord[]>(() => getCustomHolidays());
   const [schedules, setSchedules] = useState<TaxSchedule[]>(() => {
+    const activeHolidays = getCustomHolidays();
     try {
       const saved = localStorage.getItem('lx_mma_schedules');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((s: TaxSchedule) => recalculateScheduleDueDate(s, activeHolidays));
+        }
       }
     } catch (e) {
       // ignore
     }
-    return defaultSchedules;
+    return defaultSchedules.map((s) => recalculateScheduleDueDate(s, activeHolidays));
   });
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,9 +74,13 @@ export default function App() {
         const res = await fetch('/api/tax-schedules');
         const data = await res.json();
         if (data.success && data.schedules && data.schedules.length > 0) {
-          setSchedules(data.schedules);
-          generateNotifications(data.schedules);
-          localStorage.setItem('lx_mma_schedules', JSON.stringify(data.schedules));
+          const activeHolidays = getCustomHolidays();
+          const recalculated = data.schedules.map((s: TaxSchedule) =>
+            recalculateScheduleDueDate(s, activeHolidays)
+          );
+          setSchedules(recalculated);
+          generateNotifications(recalculated);
+          localStorage.setItem('lx_mma_schedules', JSON.stringify(recalculated));
         }
       } catch (e) {
         console.error('Failed to fetch schedules from API (using local/default cache):', e);
@@ -281,6 +290,7 @@ export default function App() {
         ) : viewMode === 'calendar' ? (
           <CalendarView
             schedules={schedules}
+            holidays={holidays}
             onEdit={(sched) => {
               setEditingSchedule(sched);
               setIsAddModalOpen(true);
@@ -360,9 +370,12 @@ export default function App() {
       <HolidayManagerModal
         isOpen={isHolidayModalOpen}
         onClose={() => setIsHolidayModalOpen(false)}
-        onHolidaysChanged={() => {
-          // Re-trigger notification generation or refresh
-          generateNotifications(schedules);
+        holidays={holidays}
+        onSaveHolidays={(updatedHolidays) => {
+          saveCustomHolidays(updatedHolidays);
+          setHolidays(updatedHolidays);
+          const recalculated = schedules.map((s) => recalculateScheduleDueDate(s, updatedHolidays));
+          saveSchedulesToServer(recalculated);
         }}
       />
     </div>

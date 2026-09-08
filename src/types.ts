@@ -5,6 +5,7 @@ export interface TaxSchedule {
   title: string;
   category: TaxCategory;
   dueDate: string; // YYYY-MM-DD
+  originalDueDate?: string; // 법정 기준 마감일 (공휴일 이월 전 원래 마감일)
   description: string;
   isOfficial: boolean; // 국세청 공인 일정 여부
   isImportant: boolean; // 중요한 일정 (볼드 처리 등 눈에 띄게 강조)

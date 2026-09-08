@@ -545,13 +545,15 @@ const schedulesData: TaxSchedule[] = [
 
 // Automatically apply getNextBusinessDay to all default schedules so that if due date falls on weekend/holiday, it shifts to next business day
 export const defaultSchedules: TaxSchedule[] = schedulesData.map(sched => {
-  const { adjustedDate, wasShifted, originalDate } = getNextBusinessDay(sched.dueDate);
+  const originalDate = sched.originalDueDate || sched.dueDate;
+  const { adjustedDate, wasShifted } = getNextBusinessDay(originalDate);
   let desc = sched.description;
   if (wasShifted) {
     desc += ` (원래 마감일인 ${originalDate}이 주말/공휴일이므로 익영업일인 ${adjustedDate}로 이월)`;
   }
   return {
     ...sched,
+    originalDueDate: originalDate,
     dueDate: adjustedDate,
     description: desc
   };

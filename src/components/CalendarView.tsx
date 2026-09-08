@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { TaxSchedule } from '../types';
+import { HolidayRecord } from '../utils/taxUtils';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Star, CheckCircle2, Plus, Trash2, Edit3, X } from 'lucide-react';
 
 interface CalendarViewProps {
   schedules: TaxSchedule[];
+  holidays: HolidayRecord[];
   onEdit: (schedule: TaxSchedule) => void;
   onToggleComplete: (id: string) => void;
   onDelete: (id: string) => void;
@@ -12,6 +14,7 @@ interface CalendarViewProps {
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   schedules,
+  holidays,
   onEdit,
   onToggleComplete,
   onDelete,
@@ -56,38 +59,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     ? schedules.filter((s) => s.dueDate === selectedDateModal)
     : [];
 
-  const getHolidayName = (d: number) => {
-    const mm = String(month + 1).padStart(2, '0');
-    const dd = String(d).padStart(2, '0');
-    const mmmdd = `${mm}-${dd}`;
-    const map: Record<string, string> = {
-      '01-01': '신정',
-      '02-16': '설날연휴',
-      '02-17': '설날',
-      '02-18': '설날연휴',
-      '03-01': '삼일절',
-      '03-02': '대체공휴일',
-      '05-05': '어린이날',
-      '05-24': '부처님오신날',
-      '05-25': '대체공휴일',
-      '06-06': '현충일',
-      '08-15': '광복절',
-      '09-24': '추석연휴',
-      '09-25': '추석',
-      '09-26': '추석연휴',
-      '09-28': '대체공휴일',
-      '10-03': '개천절',
-      '10-09': '한글날',
-      '12-25': '크리스마스'
-    };
-    return year === 2026 ? map[mmmdd] || '' : '';
+  const getHolidayInfo = (dateString: string) => {
+    return holidays.find((h) => h.date === dateString);
   };
 
-  const isWeekendOrHoliday = (d: number) => {
+  const isWeekendOrHoliday = (dateString: string, d: number) => {
     const dateObj = new Date(year, month, d);
     const dayOfWeek = dateObj.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) return true;
-    return !!getHolidayName(d);
+    return !!getHolidayInfo(dateString);
   };
 
   return (
@@ -171,16 +151,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
                       isToday
                         ? 'bg-emerald-600 text-white'
-                        : isWeekendOrHoliday(item.day!)
+                        : isWeekendOrHoliday(item.dateString, item.day!)
                         ? 'bg-rose-50 text-rose-600 font-extrabold border border-rose-200'
                         : 'text-slate-700 bg-slate-100 group-hover:bg-emerald-100 group-hover:text-emerald-800'
                     }`}
                   >
                     {item.day}
                   </span>
-                  {getHolidayName(item.day!) && (
-                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md truncate max-w-[70px]" title={getHolidayName(item.day!)}>
-                      {getHolidayName(item.day!)}
+                  {getHolidayInfo(item.dateString) && (
+                    <span
+                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md truncate max-w-[80px] ${
+                        getHolidayInfo(item.dateString)?.type === 'substitute' ||
+                        getHolidayInfo(item.dateString)?.name.includes('대체')
+                          ? 'text-amber-700 bg-amber-50 border border-amber-200'
+                          : 'text-rose-600 bg-rose-50 border border-rose-100'
+                      }`}
+                      title={getHolidayInfo(item.dateString)?.name}
+                    >
+                      {getHolidayInfo(item.dateString)?.name}
                     </span>
                   )}
                 </div>

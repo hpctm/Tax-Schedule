@@ -69,6 +69,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
       title,
       category,
       dueDate: adjustedDate,
+      originalDueDate: originalDate,
       description: finalDesc,
       isOfficial,
       isImportant,
