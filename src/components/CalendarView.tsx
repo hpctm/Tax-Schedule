@@ -56,6 +56,40 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     ? schedules.filter((s) => s.dueDate === selectedDateModal)
     : [];
 
+  const getHolidayName = (d: number) => {
+    const mm = String(month + 1).padStart(2, '0');
+    const dd = String(d).padStart(2, '0');
+    const mmmdd = `${mm}-${dd}`;
+    const map: Record<string, string> = {
+      '01-01': '신정',
+      '02-16': '설날연휴',
+      '02-17': '설날',
+      '02-18': '설날연휴',
+      '03-01': '삼일절',
+      '03-02': '대체공휴일',
+      '05-05': '어린이날',
+      '05-24': '부처님오신날',
+      '05-25': '대체공휴일',
+      '06-06': '현충일',
+      '08-15': '광복절',
+      '09-24': '추석연휴',
+      '09-25': '추석',
+      '09-26': '추석연휴',
+      '09-28': '대체공휴일',
+      '10-03': '개천절',
+      '10-09': '한글날',
+      '12-25': '크리스마스'
+    };
+    return year === 2026 ? map[mmmdd] || '' : '';
+  };
+
+  const isWeekendOrHoliday = (d: number) => {
+    const dateObj = new Date(year, month, d);
+    const dayOfWeek = dateObj.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) return true;
+    return !!getHolidayName(d);
+  };
+
   return (
     <div className="bg-white rounded-2xl border border-emerald-100 shadow-xs p-6">
       {/* Header controls */}
@@ -132,15 +166,24 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               }`}
             >
               <div className="flex items-center justify-between">
-                <span
-                  className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
-                    isToday
-                      ? 'bg-emerald-600 text-white'
-                      : 'text-slate-700 bg-slate-100 group-hover:bg-emerald-100 group-hover:text-emerald-800'
-                  }`}
-                >
-                  {item.day}
-                </span>
+                <div className="flex items-center space-x-1.5">
+                  <span
+                    className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
+                      isToday
+                        ? 'bg-emerald-600 text-white'
+                        : isWeekendOrHoliday(item.day!)
+                        ? 'bg-rose-50 text-rose-600 font-extrabold border border-rose-200'
+                        : 'text-slate-700 bg-slate-100 group-hover:bg-emerald-100 group-hover:text-emerald-800'
+                    }`}
+                  >
+                    {item.day}
+                  </span>
+                  {getHolidayName(item.day!) && (
+                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md truncate max-w-[70px]" title={getHolidayName(item.day!)}>
+                      {getHolidayName(item.day!)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center space-x-1">
                   {daySchedules.length > 0 && (
                     <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-md">
