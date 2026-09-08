@@ -12,6 +12,7 @@ export interface TaxSchedule {
   status: 'upcoming' | 'due_soon' | 'completed' | 'overdue';
   completed: boolean;
   notes?: string;
+  source?: string; // 일정 출처
 }
 
 export interface NotificationItem {

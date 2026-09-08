@@ -522,13 +522,21 @@ function getStoredSchedules() {
       const fileContent = fs.readFileSync(dataFilePath, "utf-8");
       const parsed = JSON.parse(fileContent);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.map((s: any) => ({
+          ...s,
+          source: s.source || (s.category === '법인세' ? '국세청 홈택스 법인세 신고안내 (hometax.go.kr)' : s.category === '부가가치세' ? '국세청 홈택스 및 LX MMA 월별 부가가치세 신고 지침' : s.category === '원천세' ? '국세청 홈택스 원천징수 신고 안내' : '위택스(Wetax) 지방소득세 특별징수 납부안내')
+        }));
       }
     }
   } catch (e) {
     console.error("Error reading storage:", e);
   }
-  return defaultSchedules;
+  const initialized = (defaultSchedules as any[]).map(s => ({
+    ...s,
+    source: s.source || (s.category === '법인세' ? '국세청 홈택스 법인세 신고안내 (hometax.go.kr)' : s.category === '부가가치세' ? '국세청 홈택스 및 LX MMA 월별 부가가치세 신고 지침' : s.category === '원천세' ? '국세청 홈택스 원천징수 신고 안내' : '위택스(Wetax) 지방소득세 특별징수 납부안내')
+  }));
+  saveStoredSchedules(initialized);
+  return initialized;
 }
 
 function saveStoredSchedules(schedules: any[]) {

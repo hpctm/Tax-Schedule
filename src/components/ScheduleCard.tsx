@@ -101,9 +101,14 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
         >
           {schedule.title}
         </h3>
-        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
+        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 mb-2">
           {schedule.description}
         </p>
+        {schedule.source && (
+          <div className="inline-flex items-center text-[11px] font-medium text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md">
+            <span className="font-bold text-slate-700 mr-1">출처:</span> {schedule.source}
+          </div>
+        )}
       </div>
 
       {/* Date & Reminder Info */}
