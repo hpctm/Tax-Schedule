@@ -8,134 +8,13 @@ import { ScheduleCard } from './components/ScheduleCard';
 import { CalendarView } from './components/CalendarView';
 import { AddScheduleModal } from './components/AddScheduleModal';
 import { NotificationModal } from './components/NotificationModal';
-import { CsvUploadModal } from './components/CsvUploadModal';
 import { LoginModal } from './components/LoginModal';
-import { ShieldCheck, AlertCircle, Plus, Upload } from 'lucide-react';
-
-const defaultSchedules: TaxSchedule[] = [
-  {
-    id: "sched-1",
-    title: "1월 원천세 신고 및 납부",
-    category: "원천세",
-    dueDate: "2026-02-10",
-    description: "전년도 12월분 소상공인/근로소득 원천징수세액 신고 및 납부",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 3,
-    status: "upcoming",
-    completed: false,
-    notes: "국세청 홈택스 전자신고 필수"
-  },
-  {
-    id: "sched-2",
-    title: "법인세 확정 신고 및 납부 (12월 결산법인)",
-    category: "법인세",
-    dueDate: "2026-03-31",
-    description: "전기분 법인세 신고 및 납부 (재무제표, 세무조정계산서 제출)",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 7,
-    status: "upcoming",
-    completed: false,
-    notes: "회계법인 감사보고서 첨부 확인 필요"
-  },
-  {
-    id: "sched-3",
-    title: "4대사회보험 보수총액 통보 및 신고",
-    category: "4대보험",
-    dueDate: "2026-03-10",
-    description: "전년도 보수총액 기준 고용/산재보험 정산 및 건강보험 연말정산",
-    isOfficial: true,
-    isImportant: false,
-    reminderDays: 5,
-    status: "upcoming",
-    completed: false,
-    notes: "국민건강보험공단 / 고용산재토탈서비스 신고"
-  },
-  {
-    id: "sched-4",
-    title: "1분기(1기) 부가가치세 예정신고 및 납부",
-    category: "부가가치세",
-    dueDate: "2026-04-25",
-    description: "1월 1일 ~ 3월 31일 기간에 대한 부가가치세 예정신고 (법인사업자 필수)",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 3,
-    status: "upcoming",
-    completed: false,
-    notes: "예정고지 대상자는 고지서 납부"
-  },
-  {
-    id: "sched-5",
-    title: "종합소득세 확정 신고 및 납부",
-    category: "소득세",
-    dueDate: "2026-05-31",
-    description: "개인사업자 및 프리랜서 등 종합소득세 확정신고",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 7,
-    status: "upcoming",
-    completed: false,
-    notes: "성실신고확인대상자는 6월 30일까지"
-  },
-  {
-    id: "sched-6",
-    title: "1기 부가가치세 확정신고 및 납부",
-    category: "부가가치세",
-    dueDate: "2026-07-25",
-    description: "1기(1월 1일 ~ 6월 30일) 확정 부가가치세 신고 및 납부",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 5,
-    status: "upcoming",
-    completed: false,
-    notes: "신용카드발행세액공제 등 세무 대리인 검토"
-  },
-  {
-    id: "sched-7",
-    title: "법인세 중간예납 신고 및 납부",
-    category: "법인세",
-    dueDate: "2026-08-31",
-    description: "상반기(1월 1일 ~ 6월 30일) 실적에 대한 법인세 중간예납",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 5,
-    status: "upcoming",
-    completed: false,
-    notes: "직전 사업년도 산출세액 기준 또는 가결산 선택"
-  },
-  {
-    id: "sched-8",
-    title: "2분기(2기) 부가가치세 예정신고 및 납부",
-    category: "부가가치세",
-    dueDate: "2026-10-25",
-    description: "7월 1일 ~ 9월 30일 기간에 대한 부가가치세 예정신고",
-    isOfficial: true,
-    isImportant: false,
-    reminderDays: 3,
-    status: "upcoming",
-    completed: false,
-    notes: "법인사업자 예정신고 대상"
-  },
-  {
-    id: "sched-9",
-    title: "2기 부가가치세 확정신고 및 납부",
-    category: "부가가치세",
-    dueDate: "2027-01-25",
-    description: "2기(7월 1일 ~ 12월 31일) 확정 부가가치세 신고 및 납부",
-    isOfficial: true,
-    isImportant: true,
-    reminderDays: 5,
-    status: "upcoming",
-    completed: false,
-    notes: "연말 세무마감과 연계하여 철저한 자료 준비"
-  }
-];
+import { ShieldCheck, AlertCircle, Plus } from 'lucide-react';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [schedules, setSchedules] = useState<TaxSchedule[]>(defaultSchedules);
+  const [schedules, setSchedules] = useState<TaxSchedule[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -148,10 +27,9 @@ export default function App() {
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isNotifModalOpen, setIsNotifModalOpen] = useState(false);
-  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<TaxSchedule | null>(null);
 
-  // Check Supabase session on mount
+  // Fetch initial schedules from server backend (/api/tax-schedules) and auth
   useEffect(() => {
     async function initAuthAndData() {
       if (isSupabaseConfigured && supabase) {
@@ -162,68 +40,43 @@ export default function App() {
           } else {
             setIsLoginModalOpen(true);
           }
-
-          // Fetch schedules from Supabase DB
-          const { data, error } = await supabase.from('tax_schedules').select('*');
-          if (!error && data && data.length > 0) {
-            const formatted = data.map((item: any) => ({
-              id: item.id,
-              title: item.title,
-              category: item.category,
-              dueDate: item.due_date,
-              description: item.description,
-              isOfficial: item.is_official,
-              isImportant: item.is_important,
-              reminderDays: item.reminder_days,
-              status: item.status,
-              completed: item.completed,
-              notes: item.notes,
-            }));
-            setSchedules(formatted);
-            generateNotifications(formatted);
-          } else {
-            generateNotifications(defaultSchedules);
-          }
         } catch (e) {
-          console.error('Supabase init error:', e);
-          generateNotifications(defaultSchedules);
+          console.error('Supabase auth session error:', e);
         }
       } else {
-        // If not configured, allow demo user bypass
         setCurrentUser({ email: 'lxmma.admin@lx.com', id: 'demo-user' });
-        generateNotifications(defaultSchedules);
       }
-      setIsLoading(false);
+
+      // Fetch from backend API
+      try {
+        const res = await fetch('/api/tax-schedules');
+        const data = await res.json();
+        if (data.success && data.schedules) {
+          setSchedules(data.schedules);
+          generateNotifications(data.schedules);
+        }
+      } catch (e) {
+        console.error('Failed to fetch schedules:', e);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     initAuthAndData();
   }, []);
 
-  const saveSchedulesToSupabaseOrLocal = async (updatedSchedules: TaxSchedule[]) => {
+  const saveSchedulesToServer = async (updatedSchedules: TaxSchedule[]) => {
     setSchedules(updatedSchedules);
     generateNotifications(updatedSchedules);
 
-    if (isSupabaseConfigured && supabase && currentUser) {
-      try {
-        for (const s of updatedSchedules) {
-          await supabase.from('tax_schedules').upsert({
-            id: s.id,
-            title: s.title,
-            category: s.category,
-            due_date: s.dueDate,
-            description: s.description,
-            is_official: s.isOfficial,
-            is_important: s.isImportant,
-            reminder_days: s.reminderDays,
-            status: s.status,
-            completed: s.completed,
-            notes: s.notes,
-            user_id: currentUser.id !== 'demo-user' ? currentUser.id : null,
-          });
-        }
-      } catch (err) {
-        console.error('Failed to sync with Supabase:', err);
-      }
+    try {
+      await fetch('/api/tax-schedules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schedules: updatedSchedules }),
+      });
+    } catch (err) {
+      console.error('Failed to save schedules to server:', err);
     }
   };
 
@@ -292,7 +145,7 @@ export default function App() {
       }
       return s;
     });
-    saveSchedulesToSupabaseOrLocal(updated);
+    saveSchedulesToServer(updated);
   };
 
   const handleToggleImportant = (id: string) => {
@@ -302,17 +155,13 @@ export default function App() {
       }
       return s;
     });
-    saveSchedulesToSupabaseOrLocal(updated);
+    saveSchedulesToServer(updated);
   };
 
   const handleDeleteSchedule = async (id: string) => {
     if (window.confirm('정말 이 세무 일정을 삭제하시겠습니까?')) {
       const updated = schedules.filter((s) => s.id !== id);
-      saveSchedulesToSupabaseOrLocal(updated);
-
-      if (isSupabaseConfigured && supabase) {
-        await supabase.from('tax_schedules').delete().eq('id', id);
-      }
+      saveSchedulesToServer(updated);
     }
   };
 
@@ -324,13 +173,8 @@ export default function App() {
     } else {
       updated = [scheduleData as TaxSchedule, ...schedules];
     }
-    saveSchedulesToSupabaseOrLocal(updated);
+    saveSchedulesToServer(updated);
     setEditingSchedule(null);
-  };
-
-  const handleImportCsvSchedules = (newSchedules: TaxSchedule[]) => {
-    const combined = [...newSchedules, ...schedules];
-    saveSchedulesToSupabaseOrLocal(combined);
   };
 
   const handleLogout = async () => {
@@ -375,7 +219,6 @@ export default function App() {
           setIsAddModalOpen(true);
         }}
         onOpenNotifications={() => setIsNotifModalOpen(true)}
-        onOpenCsvModal={() => setIsCsvModalOpen(true)}
         unreadCount={unreadCount}
         currentUser={currentUser}
         onLogout={handleLogout}
@@ -390,20 +233,11 @@ export default function App() {
               <span>접속 사용자: {currentUser.email} (Supabase 인증됨)</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">
-              LX MMA 정확하고 체계적인 세무 캘린더
+              LX MMA 2026년 월별 세무 신고·납부 캘린더
             </h2>
             <p className="text-sm text-emerald-100 max-w-2xl leading-relaxed">
-              법인세, 부가가치세, 원천세 및 CSV 데이터 누적 저장을 Supabase와 연동하여 안전하게 관리하세요.
+              법인세, 월별 부가가치세(매월 25일), 원천세 및 지방세(특별징수) 일정을 정확하고 체계적으로 관리하세요.
             </p>
-          </div>
-          <div className="flex flex-wrap gap-3 shrink-0">
-            <button
-              onClick={() => setIsCsvModalOpen(true)}
-              className="inline-flex items-center justify-center px-4 py-3 rounded-2xl text-sm font-semibold text-emerald-800 bg-white hover:bg-emerald-50 shadow-md transition-all active:scale-95"
-            >
-              <Upload className="w-4 h-4 mr-2 text-emerald-600" />
-              CSV 데이터 누적 업로드
-            </button>
           </div>
         </div>
 
@@ -424,7 +258,7 @@ export default function App() {
           <div className="flex items-center justify-center py-20 bg-white rounded-2xl border border-emerald-100 shadow-xs">
             <div className="flex flex-col items-center space-y-3">
               <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-sm font-medium text-slate-600">Supabase 데이터 동기화 중...</p>
+              <p className="text-sm font-medium text-slate-600">세무 일정 불러오는 중...</p>
             </div>
           </div>
         ) : viewMode === 'calendar' ? (
@@ -480,7 +314,7 @@ export default function App() {
       </main>
 
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-12 border-t border-emerald-100 text-center text-xs text-slate-500">
-        <p>© 2026 LX MMA 세무일정 관리 프로그램 (Supabase Auth & Database Integrated). All rights reserved.</p>
+        <p>© 2026 LX MMA 세무일정 관리 프로그램. All rights reserved.</p>
       </footer>
 
       <AddScheduleModal
@@ -504,13 +338,6 @@ export default function App() {
         onClearAll={() => {
           setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
         }}
-      />
-
-      <CsvUploadModal
-        isOpen={isCsvModalOpen}
-        onClose={() => setIsCsvModalOpen(false)}
-        onImportSchedules={handleImportCsvSchedules}
-        currentUser={currentUser}
       />
     </div>
   );

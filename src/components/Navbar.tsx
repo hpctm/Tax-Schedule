@@ -1,10 +1,9 @@
 import React from 'react';
-import { Calendar, Bell, Plus, ShieldCheck, Upload, LogOut } from 'lucide-react';
+import { Calendar, Bell, Plus, ShieldCheck, LogOut } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAddModal: () => void;
   onOpenNotifications: () => void;
-  onOpenCsvModal: () => void;
   unreadCount: number;
   currentUser: any;
   onLogout: () => void;
@@ -13,7 +12,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenAddModal,
   onOpenNotifications,
-  onOpenCsvModal,
   unreadCount,
   currentUser,
   onLogout,
@@ -36,16 +34,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-3">
-          {/* CSV Upload Button */}
-          <button
-            onClick={onOpenCsvModal}
-            className="hidden sm:inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-medium text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border border-slate-200"
-            title="CSV 누적 업로드"
-          >
-            <Upload className="w-4 h-4 mr-1.5 text-emerald-600" />
-            <span>CSV 누적 저장</span>
-          </button>
-
           {/* Notifications Bell */}
           <button
             onClick={onOpenNotifications}

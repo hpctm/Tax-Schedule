@@ -1,4 +1,4 @@
-export type TaxCategory = '법인세' | '부가가치세' | '원천세' | '소득세' | '4대보험' | '지방세' | '기타사내일정';
+export type TaxCategory = '법인세' | '부가가치세' | '원천세' | '지방세';
 
 export interface TaxSchedule {
   id: string;
