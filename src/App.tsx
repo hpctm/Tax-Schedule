@@ -435,6 +435,11 @@ export default function App() {
               setIsAddModalOpen(true);
             }}
             onToggleComplete={handleToggleComplete}
+            onDelete={handleDeleteSchedule}
+            onAddForDate={(dateStr) => {
+              setEditingSchedule({ dueDate: dateStr } as any);
+              setIsAddModalOpen(true);
+            }}
           />
         ) : sortedSchedules.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-emerald-100 shadow-xs p-8">

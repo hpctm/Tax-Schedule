@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import { TaxSchedule } from '../types';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Star, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Star, CheckCircle2, Plus, Trash2, Edit3, X } from 'lucide-react';
 
 interface CalendarViewProps {
   schedules: TaxSchedule[];
   onEdit: (schedule: TaxSchedule) => void;
   onToggleComplete: (id: string) => void;
+  onDelete: (id: string) => void;
+  onAddForDate: (dateString: string) => void;
 }
 
-export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, onToggleComplete }) => {
+export const CalendarView: React.FC<CalendarViewProps> = ({
+  schedules,
+  onEdit,
+  onToggleComplete,
+  onDelete,
+  onAddForDate,
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDateModal, setSelectedDateModal] = useState<string | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth(); // 0-indexed
@@ -32,7 +41,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
 
   // Build grid days
   const calendarDays = [];
-  // Padding for previous month days
   for (let i = 0; i < startDayOfWeek; i++) {
     calendarDays.push({ day: null, dateString: '' });
   }
@@ -44,6 +52,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
     calendarDays.push({ day: d, dateString });
   }
 
+  const selectedDateSchedules = selectedDateModal
+    ? schedules.filter((s) => s.dueDate === selectedDateModal)
+    : [];
+
   return (
     <div className="bg-white rounded-2xl border border-emerald-100 shadow-xs p-6">
       {/* Header controls */}
@@ -52,9 +64,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
           <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
             <CalendarIcon className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800">
-            {year}년 {monthNames[month]} 세무 일정 캘린더
-          </h2>
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">
+              {year}년 {monthNames[month]} 세무 일정 캘린더
+            </h2>
+            <p className="text-xs text-slate-400">날짜를 클릭하여 해당 일자의 일정을 확인하고 추가·수정하세요.</p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -99,7 +114,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
       <div className="grid grid-cols-7 gap-2">
         {calendarDays.map((item, index) => {
           if (!item.day) {
-            return <div key={`empty-${index}`} className="min-h-[110px] bg-slate-50/50 rounded-xl border border-transparent"></div>;
+            return <div key={`empty-${index}`} className="min-h-[120px] bg-slate-50/50 rounded-xl border border-transparent"></div>;
           }
 
           const daySchedules = schedules.filter((s) => s.dueDate === item.dateString);
@@ -109,10 +124,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
           return (
             <div
               key={item.dateString}
-              className={`min-h-[110px] p-2 rounded-xl border transition-all flex flex-col justify-between ${
+              onClick={() => setSelectedDateModal(item.dateString)}
+              className={`min-h-[120px] p-2.5 rounded-xl border transition-all flex flex-col justify-between cursor-pointer group hover:shadow-md ${
                 isToday
                   ? 'border-emerald-500 bg-emerald-50/35 ring-2 ring-emerald-200'
-                  : 'border-slate-100 bg-white hover:border-emerald-200'
+                  : 'border-slate-100 bg-white hover:border-emerald-300'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -120,25 +136,40 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
                   className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
                     isToday
                       ? 'bg-emerald-600 text-white'
-                      : 'text-slate-700 bg-slate-100'
+                      : 'text-slate-700 bg-slate-100 group-hover:bg-emerald-100 group-hover:text-emerald-800'
                   }`}
                 >
                   {item.day}
                 </span>
-                {daySchedules.length > 0 && (
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-md">
-                    {daySchedules.length}건
-                  </span>
-                )}
+                <div className="flex items-center space-x-1">
+                  {daySchedules.length > 0 && (
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-md">
+                      {daySchedules.length}건
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddForDate(item.dateString);
+                    }}
+                    className="w-5 h-5 rounded-full bg-slate-100 text-slate-500 hover:bg-emerald-600 hover:text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="이 날짜에 일정 추가"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
 
               {/* Schedules in this cell */}
-              <div className="space-y-1 mt-1.5 overflow-y-auto max-h-[75px] scrollbar-none">
+              <div className="space-y-1 mt-1.5 overflow-y-auto max-h-[80px] scrollbar-none">
                 {daySchedules.map((sched) => (
                   <div
                     key={sched.id}
-                    onClick={() => onEdit(sched)}
-                    className={`text-[11px] px-1.5 py-1 rounded-md truncate cursor-pointer transition-all flex items-center justify-between ${
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(sched);
+                    }}
+                    className={`text-[11px] px-1.5 py-1 rounded-md truncate transition-all flex items-center justify-between ${
                       sched.completed
                         ? 'bg-emerald-100/70 text-emerald-800 line-through'
                         : sched.isImportant
@@ -156,6 +187,112 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ schedules, onEdit, o
           );
         })}
       </div>
+
+      {/* Selected Date Detail Modal */}
+      {selectedDateModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800 flex items-center space-x-2">
+                  <CalendarIcon className="w-5 h-5 text-emerald-600" />
+                  <span>{selectedDateModal} 세무 일정 상세</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">해당 일자의 모든 세무 신고 및 납부 일정을 관리합니다.</p>
+              </div>
+              <button
+                onClick={() => setSelectedDateModal(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
+              {selectedDateSchedules.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 text-sm">
+                  등록된 일정이 없습니다. 아래 버튼을 눌러 일정을 추가하세요.
+                </div>
+              ) : (
+                selectedDateSchedules.map((sched) => (
+                  <div
+                    key={sched.id}
+                    className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3 hover:border-emerald-300 transition-all"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[10px] font-bold">
+                          {sched.category}
+                        </span>
+                        {sched.isImportant && (
+                          <span className="px-2 py-0.5 bg-rose-100 text-rose-800 rounded-md text-[10px] font-bold flex items-center">
+                            <Star className="w-2.5 h-2.5 fill-rose-500 text-rose-500 mr-1" /> 중요
+                          </span>
+                        )}
+                        {sched.completed && (
+                          <span className="px-2 py-0.5 bg-teal-100 text-teal-800 rounded-md text-[10px] font-bold">
+                            완료됨
+                          </span>
+                        )}
+                      </div>
+                      <h4 className={`text-sm font-bold ${sched.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                        {sched.title}
+                      </h4>
+                      <p className="text-xs text-slate-500">{sched.description}</p>
+                    </div>
+
+                    <div className="flex items-center space-x-1 shrink-0">
+                      <button
+                        onClick={() => onToggleComplete(sched.id)}
+                        className={`p-2 rounded-xl transition-colors ${
+                          sched.completed ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-emerald-100 hover:text-emerald-700'
+                        }`}
+                        title={sched.completed ? '완료 취소' : '완료 처리'}
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedDateModal(null);
+                          onEdit(sched);
+                        }}
+                        className="p-2 rounded-xl bg-slate-200 text-slate-600 hover:bg-emerald-100 hover:text-emerald-700 transition-colors"
+                        title="수정"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          onDelete(sched.id);
+                        }}
+                        className="p-2 rounded-xl bg-slate-200 text-slate-600 hover:bg-rose-100 hover:text-rose-600 transition-colors"
+                        title="삭제"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  const dateStr = selectedDateModal;
+                  setSelectedDateModal(null);
+                  onAddForDate(dateStr);
+                }}
+                className="w-full py-3 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{selectedDateModal}에 새 일정 추가하기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
