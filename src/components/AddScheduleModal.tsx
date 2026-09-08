@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TaxSchedule, TaxCategory } from '../types';
-import { X, Calendar, Star, Bell, ShieldCheck, UserCheck, FileText } from 'lucide-react';
+import { X, Calendar, Star, Bell, ShieldCheck } from 'lucide-react';
 
 interface AddScheduleModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
   editingSchedule,
 }) => {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<TaxCategory>('기타사내일정');
+  const [category, setCategory] = useState<TaxCategory>('법인세');
   const [dueDate, setDueDate] = useState('');
   const [description, setDescription] = useState('');
   const [isOfficial, setIsOfficial] = useState(false);
@@ -36,8 +36,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
       setNotes(editingSchedule.notes || '');
     } else {
       setTitle('');
-      setCategory('기타사내일정');
-      // Default to today or tomorrow
+      setCategory('법인세');
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       setDueDate(tomorrow.toISOString().split('T')[0]);
@@ -84,9 +83,9 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">
-                {editingSchedule ? '세무 일정 수정' : '사내/공인 세무 일정 추가'}
+                {editingSchedule ? '세무 일정 수정' : '세무 일정 추가'}
               </h3>
-              <p className="text-xs text-slate-500">일정을 등록하면 기한 전후 알림과 중요 강조가 적용됩니다.</p>
+              <p className="text-xs text-slate-500">법인세, 부가가치세, 원천세, 지방세 일정을 관리합니다.</p>
             </div>
           </div>
           <button
@@ -108,7 +107,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="예: 사내 분기 세무 감사 및 검토"
+              placeholder="예: 월별 부가가치세 신고 및 납부"
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
             />
           </div>
@@ -127,10 +126,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
                 <option value="법인세">법인세</option>
                 <option value="부가가치세">부가가치세</option>
                 <option value="원천세">원천세</option>
-                <option value="소득세">소득세</option>
-                <option value="4대보험">4대보험</option>
                 <option value="지방세">지방세</option>
-                <option value="기타사내일정">기타사내일정</option>
               </select>
             </div>
 
@@ -162,7 +158,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
             ></textarea>
           </div>
 
-          {/* Reminder Days */}
+          {/* Reminder Days & Notes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center">
@@ -195,39 +191,26 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
             </div>
           </div>
 
-          {/* Checkbox Toggles: Important & Official */}
+          {/* Toggles */}
           <div className="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 space-y-3">
-            {/* Important Toggle */}
-            <label className="flex items-center space-x-3 cursor-pointer">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Star className={`w-4 h-4 ${isImportant ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}`} />
+                <div>
+                  <span className="text-xs font-bold text-slate-800 block">중요 일정 강조</span>
+                  <span className="text-[11px] text-slate-500">캘린더 및 목록에서 강조 표시됩니다.</span>
+                </div>
+              </div>
               <input
                 type="checkbox"
                 checked={isImportant}
                 onChange={(e) => setIsImportant(e.target.checked)}
                 className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
               />
-              <div className="flex items-center space-x-1.5 text-sm font-semibold text-slate-800">
-                <Star className="w-4 h-4 fill-rose-500 text-rose-500" />
-                <span>중요 일정으로 강조 (볼드 처리 및 테두리 강조)</span>
-              </div>
-            </label>
-
-            {/* Official Toggle */}
-            <label className="flex items-center space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isOfficial}
-                onChange={(e) => setIsOfficial(e.target.checked)}
-                className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
-              />
-              <div className="flex items-center space-x-1.5 text-sm font-semibold text-slate-800">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>국세청 공인 일정으로 설정 (사내 고유 일정인 경우 해제)</span>
-              </div>
-            </label>
+            </div>
           </div>
 
-          {/* Buttons */}
-          <div className="flex items-center justify-end space-x-3 pt-2">
+          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
@@ -237,7 +220,7 @@ export const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-600/30 transition-all active:scale-95"
+              className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-600/30 transition-all"
             >
               {editingSchedule ? '수정 완료' : '일정 등록'}
             </button>

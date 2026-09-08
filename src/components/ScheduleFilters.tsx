@@ -1,6 +1,6 @@
 import React from 'react';
 import { TaxCategory } from '../types';
-import { Search, ListFilter, LayoutGrid, List, CheckSquare } from 'lucide-react';
+import { Search, ListFilter, LayoutGrid, List } from 'lucide-react';
 
 interface ScheduleFiltersProps {
   selectedCategory: string;
@@ -18,10 +18,7 @@ const categories: { label: string; value: string }[] = [
   { label: '법인세', value: '법인세' },
   { label: '부가가치세', value: '부가가치세' },
   { label: '원천세', value: '원천세' },
-  { label: '소득세', value: '소득세' },
-  { label: '4대보험', value: '4대보험' },
   { label: '지방세', value: '지방세' },
-  { label: '기타사내일정', value: '기타사내일정' },
 ];
 
 export const ScheduleFilters: React.FC<ScheduleFiltersProps> = ({
